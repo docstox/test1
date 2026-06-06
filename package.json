@@ -1,0 +1,28 @@
+{
+  "name": "test1",
+  "version": "1.0.0",
+  "description": "E' solo il mio primo progetto\r E' solo un test",
+  "main": "index.js",
+    "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/docstox/test1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/docstox/test1/issues"
+  },
+  "homepage": "https://github.com/docstox/test1#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.107.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
