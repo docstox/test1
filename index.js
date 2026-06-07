@@ -20,7 +20,7 @@ console.log(supabaseKey);
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Endpoint API
-app.get("/users", async (req, res) => {
+app.get("/libri", async (req, res) => {
   const { data, error } = await supabase
     .from("test")
     .select("*");
