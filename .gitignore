@@ -1,3 +1,7 @@
+# segreti passworkd e key
 .env
 .env.*
 !.env.example
+
+#dipendenze e cache
+node_modules
