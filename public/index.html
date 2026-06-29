@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LibraryShare - Material Design</title>
+  
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <header class="top-bar">
+      <div class="logo">
+        <i class="material-icons">local_library</i>
+        <span>LibraryShare</span>
+      </div>
+      <button id="theme-toggle" class="icon-btn">
+        <i class="material-icons" id="theme-icon">dark_mode</i>
+      </button>
+    </header>
+
+    <main id="main-content" class="scroll-content">
+      </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="explore">
+        <i class="material-icons">search</i>
+        <span>Esplora</span>
+      </button>
+      <button class="nav-item" data-tab="libraries">
+        <i class="material-icons">layers</i>
+        <span>Librerie</span>
+      </button>
+      <button class="nav-item" data-tab="profile">
+        <i class="material-icons">account_circle</i>
+        <span>Profilo</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

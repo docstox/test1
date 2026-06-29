@@ -1,0 +1,255 @@
+/* ============================================================================
+   1. PALETTE COLORI (Material Design 3 Tokens)
+   ============================================================================ */
+:root {
+  --background: #f8f9fa;
+  --surface: #ffffff;
+  --surface-variant: #f1f3f5;
+  --primary: #6200ee;
+  --primary-text: #212529;
+  --secondary-text: #6c757d;
+  --border: #dee2e6;
+  --shadow: rgba(0, 0, 0, 0.08);
+  --accent-badge: #e8def8;
+  --accent-badge-text: #21005d;
+}
+
+/* Quando il body ha la classe .dark, tutte le variabili cambiano automaticamente */
+body.dark {
+  --background: #121212;
+  --surface: #1e1e1e;
+  --surface-variant: #2d2d2d;
+  --primary: #bb86fc;
+  --primary-text: #f8f9fa;
+  --secondary-text: #adb5bd;
+  --border: #3a3a3a;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --accent-badge: #312152;
+  --accent-badge-text: #e8def8;
+}
+
+/* ============================================================================
+   2. LAYOUT GENERALE E SIMULATORE SMARTPHONE
+   ============================================================================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+body {
+  background-color: #212529; /* Sfondo esterno al telefono */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Il guscio del telefono */
+.app-container {
+  width: 375px;
+  height: 812px;
+  background-color: var(--background);
+  color: var(--primary-text);
+  border: 12px solid #000000;
+  border-radius: 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+/* Barra superiore */
+.top-bar {
+  background-color: var(--primary);
+  color: #ffffff;
+  padding: 30px 16px 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+/* Navigazione inferiore */
+.bottom-nav {
+  background-color: var(--surface);
+  border-t: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0 20px 0;
+  box-shadow: 0 -2px 10px var(--shadow);
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  color: var(--secondary-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  width: 33%;
+}
+
+.nav-item.active {
+  color: var(--primary);
+}
+
+/* ============================================================================
+   3. COMPONENTI INTERFACCIA (Material Cards & Forms)
+   ============================================================================ */
+.md-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+.md-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.md-subtitle {
+  font-size: 0.9rem;
+  color: var(--secondary-text);
+  margin-bottom: 12px;
+}
+
+/* Form e Input */
+.search-group {
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--primary);
+  padding: 4px 0;
+  margin-bottom: 16px;
+}
+
+.search-group input, .md-input {
+  border: none;
+  background: none;
+  outline: none;
+  width: 100%;
+  color: var(--primary-text);
+  padding: 8px;
+  font-size: 1rem;
+}
+
+.md-input {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--surface-variant);
+  margin-bottom: 12px;
+}
+
+.slider-container {
+  margin-bottom: 16px;
+}
+
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.md-slider {
+  width: 100%;
+  accent-color: var(--primary);
+}
+
+/* Bottoni */
+.md-btn {
+  background-color: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 24px;
+  width: 100%;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Badge Statistiche */
+.stats-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+
+.badge {
+  background-color: var(--accent-badge);
+  color: var(--accent-badge-text);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* Accordion / Fisarmoniche */
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  color: var(--primary-text);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.accordion-content {
+  padding: 8px 4px 16px 4px;
+  font-size: 0.9rem;
+  color: var(--secondary-text);
+}
+
+.user-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
