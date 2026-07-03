@@ -7,16 +7,45 @@ const state = {
   city: '',
   radius: 15,
   hasSearched: false,
-  books: [
-    { id: 1, title: "Dune", author: "Frank Herbert", publisher: "Fanucci", year: 2020, shares: ["mario_rossi", "luca_verdi"], reads: ["anna_neri"] },
-    { id: 2, title: "Neuromante", author: "William Gibson", publisher: "Mondadori", year: 2017, shares: ["giulia_bianchi"], reads: ["mario_rossi", "davide_gialli"] },
-    { id: 3, title: "Sapiens", author: "Yuval Noah Harari", publisher: "Bompiani", year: 2014, shares: ["sofia_viola"], reads: [] }
-  ],
+  books: [], // L'array ora parte vuoto, lo riempiremo con il database
   libraries: [
     { name: "Salotto Principale", location: "Milano Centro", isPublic: true },
     { name: "Studio / Ufficio", location: "Milano Navigli", isPublic: false }
   ]
 };
+
+// ============================================================================
+// 2. RECUPERO DATI DAL BACKEND (Express / Supabase)
+// ============================================================================
+async function caricaLibri() {
+  try {
+    // Chiama l'endpoint del nostro server Express sulla stessa porta
+    const response = await fetch('/libri');
+    if (!response.ok) throw new Error('Errore di rete durante il fetch');
+    
+    const libriDalServer = await response.json();
+    
+    // Mappiamo i campi del DB (nome_libro, autore_libro) nel nostro formato frontend.
+    // I campi mancanti li lasciamo statici come richiesto.
+    state.books = libriDalServer.map(libro => ({
+      id: libro.id,
+      title: libro.nome_libro,
+      author: libro.autore_libro,
+      publisher: "Editore Sconosciuto (Statico)",
+      year: 2024,
+      shares: ["mario_rossi", "luca_verdi"], // Dati finti statici
+      reads: ["anna_neri"] // Dati finti statici
+    }));
+
+    // Se l'utente si trova nella pagina di ricerca e ha già cliccato "cerca",
+    // forziamo un aggiornamento dello schermo per mostrare i libri appena arrivati.
+    if (state.hasSearched && state.currentTab === 'explore') {
+      render();
+    }
+  } catch (error) {
+    console.error("Si è verificato un errore nel recupero dei libri:", error);
+  }
+}
 
 // Elementi del DOM stabili
 const mainContent = document.getElementById('main-content');
@@ -25,7 +54,7 @@ const themeIcon = document.getElementById('theme-icon');
 const navItems = document.querySelectorAll('.nav-item');
 
 // ============================================================================
-// 2. LOGICA DEI TEMI ED EVENTI GLOBALI
+// 3. LOGICA DEI TEMI ED EVENTI GLOBALI
 // ============================================================================
 themeToggle.addEventListener('click', () => {
   state.isDark = !state.isDark;
@@ -36,70 +65,66 @@ themeToggle.addEventListener('click', () => {
 // Gestione dei click sulla Bottom Navigation
 navItems.forEach(item => {
   item.addEventListener('click', (e) => {
-    // Aggiorna l'aspetto grafico dei bottoni di navigazione
     navItems.forEach(nav => nav.classList.remove('active'));
     const clickedBtn = e.currentTarget;
     clickedBtn.classList.add('active');
     
-    // Cambia la vista nello stato e renderizza
     state.currentTab = clickedBtn.getAttribute('data-tab');
     render();
   });
 });
 
 // ============================================================================
-// 3. MOTORE DI RENDERING (Aggiorna lo schermo in base allo stato)
+// 4. MOTORE DI RENDERING (Aggiorna lo schermo in base allo stato)
 // ============================================================================
 function render() {
-  mainContent.innerHTML = ''; // Svuota lo schermo
-
-  if (state.currentTab === 'explore') {
-    renderExploreView();
-  } else if (state.currentTab === 'libraries') {
-    renderLibrariesView();
-  } else if (state.currentTab === 'profile') {
-    renderProfileView();
-  }
+  mainContent.innerHTML = '';
+  if (state.currentTab === 'explore') renderExploreView();
+  else if (state.currentTab === 'libraries') renderLibrariesView();
+  else if (state.currentTab === 'profile') renderProfileView();
 }
 
 // ============================================================================
-// 4. VISTE DETTAGLIATE (VIEW CONTROLLERS)
+// 5. VISTE DETTAGLIATE (VIEW CONTROLLERS)
 // ============================================================================
 
 // --- VISTA ESPLORA ---
 function renderExploreView() {
   let searchHtml = `
-    <div class="md-card">
-      <div class="md-title" style="font-size: 1.1rem; margin-bottom: 12px;">Cerca Libri Vicini</div>
-      
-      <div class="search-group">
-        <button id="gps-btn" class="icon-btn" style="color: var(--primary);"><i class="material-icons">my_location</i></button>
-        <input type="text" id="city-input" placeholder="Dove cerchi?" value="${state.city}">
-      </div>
-
-      <div class="slider-container">
-        <div class="slider-label">
-          <span>Raggio di ricerca</span>
-          <span id="radius-val" style="font-weight: bold; color: var(--primary);">${state.radius} km</span>
+    <div class="search-card-wrapper">
+      <div class="md-card">
+        <div class="md-title">Cerca Libri Vicini</div>
+        
+        <div class="search-group">
+          <button id="gps-btn" class="icon-btn" style="color: var(--primary); margin-right: 8px;"><i class="material-icons">my_location</i></button>
+          <input type="text" id="city-input" placeholder="Dove cerchi?" value="${state.city}">
         </div>
-        <input type="range" id="radius-slider" class="md-slider" min="1" max="50" value="${state.radius}">
-      </div>
 
-      <button id="search-submit" class="md-btn">
-        <i class="material-icons">search</i> Cerca Libri
-      </button>
+        <div class="slider-container">
+          <div class="slider-label">
+            <span>Raggio di ricerca</span>
+            <span id="radius-val" style="font-weight: bold; color: var(--primary);">${state.radius} km</span>
+          </div>
+          <input type="range" id="radius-slider" class="md-slider" min="1" max="50" value="${state.radius}">
+        </div>
+
+        <button id="search-submit" class="md-btn">
+          <i class="material-icons">search</i> Cerca Libri
+        </button>
+      </div>
     </div>
   `;
 
-  // Se l'utente ha premuto cerca, mostriamo le statistiche e i libri
   if (state.hasSearched) {
     searchHtml += `
       <div class="stats-row">
         <span class="badge"><i class="material-icons" style="font-size:1rem;">book</i> ${state.books.length} Libri</span>
-        <span class="badge"><i class="material-icons" style="font-size:1rem;">people</i> 4 Condivisori</span>
+        <span class="badge"><i class="material-icons" style="font-size:1rem;">people</i> 2 Condivisori</span>
       </div>
+      <div class="grid-layout">
     `;
 
+    // Generiamo le card dei libri DENTRO la griglia usando i dati pescati dal DB
     state.books.forEach(book => {
       searchHtml += `
         <div class="md-card">
@@ -129,11 +154,13 @@ function renderExploreView() {
         </div>
       `;
     });
+    
+    searchHtml += `</div>`; // Chiudiamo la grid-layout
   }
 
   mainContent.innerHTML = searchHtml;
 
-  // Riconnessione dinamica degli eventi della form
+  // Event Listeners della form di ricerca
   document.getElementById('radius-slider').addEventListener('input', (e) => {
     state.radius = e.target.value;
     document.getElementById('radius-val').textContent = state.radius + ' km';
@@ -155,9 +182,8 @@ function renderExploreView() {
   });
 }
 
-// --- VISTA LIBRERIE ---
 function renderLibrariesView() {
-  let libHtml = '<h2 style="margin-bottom:16px;">Le tue Librerie</h2>';
+  let libHtml = '<h2 style="margin-bottom:16px;">Le tue Librerie</h2><div class="grid-layout">';
   state.libraries.forEach((lib, index) => {
     libHtml += `
       <div class="md-card" onclick="toggleAccordion('lib-details-${index}')" style="cursor:pointer;">
@@ -168,40 +194,42 @@ function renderLibrariesView() {
           </div>
           <span class="badge">${lib.isPublic ? 'Pubblica' : 'Privata'}</span>
         </div>
-        <div id="lib-details-${index}" class="accordion-content" style="display:none; margin-top:12px; border-top:1px solid var(--border); pt:8px;">
-           <p style="font-size:0.85rem;">Questa libreria contiene le tue copie fisiche. Puoi aggiungere nuovi libri tramite le API del server backend.</p>
+        <div id="lib-details-${index}" class="accordion-content" style="display:none; margin-top:12px; border-top:1px solid var(--border); padding-top:12px;">
+           <p style="font-size:0.85rem;">Questa libreria contiene le tue copie fisiche. Clicca per gestire i titoli.</p>
         </div>
       </div>
     `;
   });
+  libHtml += '</div>';
   mainContent.innerHTML = libHtml;
 }
 
-// --- VISTA PROFILO ---
 function renderProfileView() {
   mainContent.innerHTML = `
     <h2 style="margin-bottom:16px;">Il mio Profilo</h2>
-    <div class="md-card">
-      <label style="font-size:0.8rem; font-weight:bold; color:var(--primary);">Nickname</label>
-      <input type="text" class="md-input" value="mario_developer">
-      
-      <label style="font-size:0.8rem; font-weight:bold; color:var(--primary);">Email</label>
-      <input type="email" class="md-input" value="mario@email.it">
-      
-      <button class="md-btn" style="margin-top:12px;" onclick="alert('Profilo Salvato Locale!')">Salva Dati</button>
+    <div class="search-card-wrapper">
+      <div class="md-card">
+        <label style="font-size:0.8rem; font-weight:bold; color:var(--primary); display:block; margin-bottom:4px;">Nickname</label>
+        <input type="text" class="md-input" value="mario_developer">
+        
+        <label style="font-size:0.8rem; font-weight:bold; color:var(--primary); display:block; margin-bottom:4px;">Email</label>
+        <input type="email" class="md-input" value="mario@email.it">
+        
+        <button class="md-btn" style="margin-top:12px;" onclick="alert('Profilo Salvato Locale!')">Salva Dati</button>
+      </div>
     </div>
   `;
 }
 
-// Funzione globale helper per aprire/chiudere gli accordion
 window.toggleAccordion = function(id) {
   const el = document.getElementById(id);
-  if (el.style.display === 'none') {
-    el.style.display = 'block';
-  } else {
-    el.style.display = 'none';
-  }
+  el.style.display = (el.style.display === 'none') ? 'block' : 'none';
 };
 
-// Primo avvio dell'applicazione
+// ============================================================================
+// 6. AVVIO DELL'APPLICAZIONE
+// ============================================================================
+// Facciamo partire il recupero dei dati in background
+caricaLibri();
+// Renderizziamo subito l'interfaccia (che partirà vuota per i libri finché non arriva la risposta)
 render();
